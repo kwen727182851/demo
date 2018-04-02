@@ -52,7 +52,6 @@ protected:
 	int jhdev_check_connect();
     int m_bsp_rsp_id;
     char m_log_string[1024];
-	enum {RSA, ECC} m_CrtType;
 
 	HANDLE m_hProcThread;//线程句柄
     DWORD m_dwProcThreadID;//线程ID

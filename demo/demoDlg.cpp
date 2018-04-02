@@ -129,7 +129,6 @@ BEGIN_MESSAGE_MAP(CdemoDlg, CDialogEx)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_IN, &CdemoDlg::OnBnClickedButtonIn)
 	ON_BN_CLICKED(IDC_BUTTON_OUT, &CdemoDlg::OnBnClickedButtonOut)
-	ON_CONTROL_RANGE(BN_CLICKED, IDC_RADIO_RSA, IDC_RADIO_ECC, OnBnClickedRadio)
 END_MESSAGE_MAP()
 
 
@@ -168,8 +167,6 @@ BOOL CdemoDlg::OnInitDialog()
 	enum_reg_key_value(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM");
 	m_brateSelect.SetCurSel(0);
 
-	((CButton *)GetDlgItem(IDC_RADIO_RSA))->SetCheck(TRUE);//选上
-	((CButton *)GetDlgItem(IDC_RADIO_ECC))->SetCheck(FALSE);//不选
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -979,7 +976,7 @@ HBRUSH CdemoDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 void CdemoDlg::OnBnClickedButtonIn()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	unsigned char bsp[] = {0x32,0x77,0x43,CMD_DOWN_CRT};
+	unsigned char bsp[50] = {0x32,0x77,0x43,CMD_DOWN_CRT};
 
 	CString szFilterFDlg = "文件 (*.crt)|*.crt||"; 
 	CFileDialog cdlg( TRUE,"*.crt",NULL,OFN_HIDEREADONLY,szFilterFDlg,0);
@@ -1000,11 +997,6 @@ void CdemoDlg::OnBnClickedButtonIn()
 	{
 		retVal = 1;
 	}
-
-	if(m_CrtType == ECC)
-	{
-		bsp[3] =CMD_DOWN_ECC_CRT;
-	}
 	if (retVal)
 	{
 		int retry_count;
@@ -1014,7 +1006,7 @@ void CdemoDlg::OnBnClickedButtonIn()
 		int flen = fname.GetLength();
 		if (flen >= MAX_FILE_NAME)
 		{
-			sprintf(filename, "%s",fname.Left(MAX_FILE_NAME-1).GetString());
+			sprintf(filename, "%s.crt",fname.Left(MAX_FILE_NAME-1).GetString());
 		}
 		else
 		{
@@ -1102,11 +1094,4 @@ void CdemoDlg::OnBnClickedButtonOut()
 	SendRSData(bsp, 3);
 }
 
-void CdemoDlg::OnBnClickedRadio(UINT idCtl)
-{
-    if(idCtl == IDC_RADIO_RSA)
-        m_CrtType = RSA;
-    if(idCtl == IDC_RADIO_ECC)
-        m_CrtType = ECC;
-}
 
